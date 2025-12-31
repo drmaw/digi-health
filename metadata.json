@@ -1,0 +1,7 @@
+{
+  "name": "DiGi Health",
+  "description": "A comprehensive patient-centric healthcare platform for digital record-keeping, organization automation, and professional collaboration at the grassroots level.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
