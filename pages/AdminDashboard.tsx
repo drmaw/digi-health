@@ -152,59 +152,100 @@ const AdminDashboard: React.FC = () => {
 
       {(activeTab === 'users' || activeTab === 'staff') && (
         <div className="grid grid-cols-1 gap-4">
-          {(activeTab === 'users' ? filteredUsers : filteredStaff).map(user => (
-            <AdminUserRow 
-              key={user.id} 
-              user={user} 
-              onSuspend={suspendRole} 
-              onRestore={unsuspendRole} 
-              onRemove={removeRole}
-              onApprove={approveRole}
-              onUpdateLimit={(limit) => handleUpdateLimit(user, limit)}
+          {/* Governance: Sections remain visible to reflect system capability even when unused. */}
+          {((activeTab === 'users' ? filteredUsers : filteredStaff).length > 0) ? (
+            (activeTab === 'users' ? filteredUsers : filteredStaff).map(user => (
+              <AdminUserRow 
+                key={user.id} 
+                user={user} 
+                onSuspend={suspendRole} 
+                onRestore={unsuspendRole} 
+                onRemove={removeRole}
+                onApprove={approveRole}
+                onUpdateLimit={(limit) => handleUpdateLimit(user, limit)}
+              />
+            ))
+          ) : (
+            <EmptyState 
+              title={`No ${activeTab === 'users' ? 'users' : 'staff'} found`} 
+              message="This section will populate automatically when data is available." 
             />
-          ))}
+          )}
         </div>
       )}
 
+const EmptyState = ({ title, message }: { title: string; message: string }) => (
+  <div className="py-20 text-center bg-white rounded-[3rem] border-2 border-dashed border-slate-100">
+    <h3 className="text-xl font-black text-slate-300">{title}</h3>
+    <p className="text-slate-400 font-bold mt-2">{message}</p>
+  </div>
+);
+
+
       {activeTab === 'orgs' && (
         <div className="grid grid-cols-1 gap-6">
-          {filteredOrgs.map(org => (
-            <AdminOrgCard 
-              key={org.id} 
-              org={org} 
-              extensionMonths={extensionMonths[org.id] || 6}
-              setMonths={(m) => setMonths(org.id, m)}
-              onExtend={() => handleExtend(org.id)}
-              onUpdateStatus={(s) => updateOrganizationStatus(org.id, s)}
+          {/* Governance: Sections remain visible to reflect system capability even when unused. */}
+          {(filteredOrgs.length > 0) ? (
+            filteredOrgs.map(org => (
+              <AdminOrgCard 
+                key={org.id} 
+                org={org} 
+                extensionMonths={extensionMonths[org.id] || 6}
+                setMonths={(m) => setMonths(org.id, m)}
+                onExtend={() => handleExtend(org.id)}
+                onUpdateStatus={(s) => updateOrganizationStatus(org.id, s)}
+              />
+            ))
+          ) : (
+            <EmptyState 
+              title="No organizations found" 
+              message="This section will populate automatically when data is available." 
             />
-          ))}
+          )}
         </div>
       )}
 
       {activeTab === 'approvals' && (
         <div className="space-y-4">
-          {pending.map((app, idx) => (
-            <div key={idx} className="bg-white p-8 rounded-[2.5rem] border shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-6">
-                <img src={app.user.photoUrl} className="w-16 h-16 rounded-2xl shadow-sm border" alt="" />
-                <div>
-                  <p className="font-black text-slate-900 text-lg">{app.user.name}</p>
-                  <span className="ui-badge bg-blue-100 text-blue-700">{app.role}</span>
+          {/* Governance: Sections remain visible to reflect system capability even when unused. */}
+          {(pending.length > 0) ? (
+            pending.map((app, idx) => (
+              <div key={idx} className="bg-white p-8 rounded-[2.5rem] border shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="flex items-center gap-6">
+                  <img src={app.user.photoUrl} className="w-16 h-16 rounded-2xl shadow-sm border" alt="" />
+                  <div>
+                    <p className="font-black text-slate-900 text-lg">{app.user.name}</p>
+                    <span className="ui-badge bg-blue-100 text-blue-700">{app.role}</span>
+                  </div>
                 </div>
+                <button onClick={() => approveRole(app.user.id, app.role)} className="ui-btn ui-btn-primary">Approve</button>
               </div>
-              <button onClick={() => approveRole(app.user.id, app.role)} className="ui-btn ui-btn-primary">Approve</button>
-            </div>
-          ))}
+            ))
+          ) : (
+            <EmptyState 
+              title="No pending approvals" 
+              message="This section will populate automatically when new role applications are submitted." 
+            />
+          )}
         </div>
       )}
 
       {activeTab === 'audit' && (
         <div className="bg-white rounded-[3rem] border shadow-sm overflow-hidden">
+          {/* Governance: Sections remain visible to reflect system capability even when unused. */}
+          {(filteredAuditLogs.length > 0) ? (
+          {(filteredAuditLogs.length > 0) ? (
            <div className="divide-y">
               {filteredAuditLogs.map(log => (
                 <AuditLogRow key={log.id} log={log} />
               ))}
            </div>
+          ) : (
+            <EmptyState 
+              title="No audit activity recorded" 
+              message="This section will populate automatically when system actions occur." 
+            />
+          )}
         </div>
       )}
     </div>
