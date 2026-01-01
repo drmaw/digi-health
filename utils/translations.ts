@@ -58,7 +58,11 @@ export const translations: Record<Language, any> = {
     chamber_roster: 'চেম্বার রোস্টার',
     clinical_console: 'ক্লিনিকাল কনসোল',
     chamber_appointments: 'চেম্বারের অ্যাপয়েন্টমেন্ট',
-    no_appointments: 'আজ কোনো অ্যাপয়েন্টমেন্ট নেই'
+    no_appointments: 'আজ কোনো অ্যাপয়েন্টমেন্ট নেই',
+    hero_headline: 'আপনার স্বাস্থ্যসেবা, আপনার শর্তে। ডিজিটাল বাংলাদেশ জুড়ে।',
+    hero_subtitle: 'DiGi Health আপনাকে আধুনিক, সমন্বিত স্বাস্থ্যসেবা প্রদান করে। অ্যাপয়েন্টমেন্ট বুকিং থেকে শুরু করে ব্যক্তিগতকৃত চিকিৎসা পরিকল্পনা পর্যন্ত, আপনার সুস্থ জীবন নিশ্চিত করতে আমরা পাশে আছি।',
+    hero_cta_join: 'এখনই শুরু করুন',
+    hero_cta_learn: 'আরও জানুন'
   },
   en: {
     home: 'Home',
@@ -117,6 +121,10 @@ export const translations: Record<Language, any> = {
     chamber_roster: 'Chamber Roster',
     clinical_console: 'Clinical Console',
     chamber_appointments: 'Chamber Appointments',
-    no_appointments: 'No appointments for today'
+    no_appointments: 'No appointments for today',
+    hero_headline: 'Your Healthcare, On Your Terms. Across Digital Bangladesh.',
+    hero_subtitle: 'DiGi Health provides you with modern, integrated healthcare. From booking appointments to personalized treatment plans, we are here to ensure your healthy life.',
+    hero_cta_join: 'Get Started Today',
+    hero_cta_learn: 'Learn More'
   }
 };
