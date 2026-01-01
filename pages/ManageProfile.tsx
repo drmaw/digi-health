@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useApp } from '../AppContext';
+import { useApp } from "../context/AppContext";
 import { UserProfile, ChronicConditions, EmergencyContact, UserRole } from '../types';
 
 export default function ManageProfile() {

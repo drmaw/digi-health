@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useApp } from "../AppContext";
+import { useApp } from "../context/AppContext";
 
 export default function AuthPage() {
   const { signIn, signUp } = useApp();
