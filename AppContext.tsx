@@ -4,8 +4,8 @@ import {
   AuditLog, Investigation, Appointment, DoctorSchedule, FinancialEntry, OrgStatus 
 } from './types';
 import { auth, db, githubProvider } from './firebase';
-import { translations, Language } from './translations';
-import { generateHealthId } from './helpers';
+import { translations, Language } from './utils/translations';
+import { generateHealthId } from './utils/helpers';
 
 interface AppContextType {
   currentUser: UserProfile | null;
