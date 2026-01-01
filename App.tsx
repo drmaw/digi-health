@@ -12,17 +12,17 @@ import { AppProvider, useApp } from './AppContext';
 import { UserRole } from './types';
 
 /* Pages */
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 
 import PatientDashboard from './pages/PatientDashboard';
 import DoctorDashboard from './pages/DoctorDashboard';
 import StaffDashboard from './pages/StaffDashboard';
-import OrgOwnerDashboard from './pages/OrgOwnerDashboard';
-import ApplyRole from './pages/ApplyRole';
-import AdminPanel from './pages/AdminPanel';
-import ManageProfile from './pages/ManageProfile';
+import OrganizationDashboard from './pages/OrganizationDashboard';
+import RoleApplicationPage from './pages/RoleApplicationPage';
+import AdminDashboard from './pages/AdminDashboard';
+import ProfileSettingsPage from './pages/ProfileSettingsPage';
 
 /* -------------------- Navigation -------------------- */
 
@@ -175,18 +175,18 @@ export default function App() {
           <main className="flex-1 p-8 overflow-x-hidden">
             <Routes>
               {/* Public */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignUp />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
 
               {/* Protected */}
               <Route path="/profile" element={<PrivateRoute><PatientDashboard /></PrivateRoute>} />
-              <Route path="/manage-profile" element={<PrivateRoute><ManageProfile /></PrivateRoute>} />
+              <Route path="/manage-profile" element={<PrivateRoute><ProfileSettingsPage /></PrivateRoute>} />
               <Route path="/doctor" element={<PrivateRoute><DoctorDashboard /></PrivateRoute>} />
               <Route path="/staff" element={<PrivateRoute><StaffDashboard /></PrivateRoute>} />
-              <Route path="/org" element={<PrivateRoute><OrgOwnerDashboard /></PrivateRoute>} />
-              <Route path="/apply" element={<PrivateRoute><ApplyRole /></PrivateRoute>} />
-              <Route path="/admin" element={<PrivateRoute><AdminPanel /></PrivateRoute>} />
+              <Route path="/org" element={<PrivateRoute><OrganizationDashboard /></PrivateRoute>} />
+              <Route path="/apply" element={<PrivateRoute><RoleApplicationPage /></PrivateRoute>} />
+              <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
 
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
