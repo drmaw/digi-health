@@ -273,8 +273,14 @@ const AdminOrgCard: React.FC<{
 
 const AuditLogRow: React.FC<{ log: AuditLog }> = ({ log }) => (
   <div className="p-6 hover:bg-slate-50 transition-colors">
-    <p className="text-sm font-black text-slate-800">{log.details}</p>
-    <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Actor: {log.actorName} • {new Date(log.timestamp).toLocaleString()}</p>
+    <p className="text-sm font-black text-slate-800">
+      <span className="text-blue-600">{log.actorName}</span> (Role: <span className="text-purple-600">{log.actorRole || 'N/A'}</span>) → <span className="text-emerald-600">{log.action}</span>
+      {log.targetType && log.targetId && (
+        <> → {log.targetType}: <span className="font-mono text-slate-600">{log.targetName || log.targetId}</span></>
+      )}
+      : {log.details}
+    </p>
+    <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">Timestamp: {new Date(log.timestamp).toLocaleString()}</p>
   </div>
 );
 

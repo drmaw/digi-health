@@ -28,11 +28,13 @@ export interface AuditLog {
   timestamp: string;
   actorId: string;
   actorName: string;
+  actorRole?: string;
   action: string;
-  orgId?: string;
-  targetId?: string;
+  targetType?: "User" | "Organization" | "Record" | null;
+  targetId?: string | null;
   targetName?: string;
   details: string;
+  orgId?: string;
 }
 
 export interface FinancialEntry {

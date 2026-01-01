@@ -27,7 +27,7 @@ interface AppContextType {
   updateUser: (user: UserProfile) => Promise<void>;
   uploadRecord: (title: string, dataUrl: string) => Promise<void>;
   deleteRecord: (id: string) => Promise<void>;
-  addLog: (action: string, details: string, targetId?: string, targetName?: string, orgId?: string) => Promise<void>;
+    addLog: (action: string, details: string, options?: { targetType?: "User" | "Organization" | "Record" | null; targetId?: string | null; orgId?: string; targetName?: string; }) => Promise<void>;
   applyForRole: (role: UserRole, details: string, regNumber: string) => Promise<string | null>;
   approveRole: (userId: string, role: UserRole) => Promise<void>;
   suspendRole: (userId: string, role: UserRole) => Promise<void>;
@@ -128,11 +128,32 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const uploadRecord = async (title: string, dataUrl: string) => {
     if (!currentUser) return;
     await db.collection('records').add({ patientId: currentUser.id, title, fileUrl: dataUrl, fileType: 'image', uploadedAt: new Date().toISOString(), isHidden: false });
+    // Governance: Patient data record creation is logged for accountability.
+    addLog('RECORD_CREATED', `Patient data record created: ${title}`, { targetType: 'Record', targetId: currentUser.id, targetName: currentUser.name });
   };
-  const deleteRecord = async (id: string) => await db.collection('records').doc(id).delete();
-  const addLog = async (action: string, details: string, targetId?: string, targetName?: string, orgId?: string) => {
+  const deleteRecord = async (id: string) => {
+    // Governance: Patient data record deletion is logged for accountability.
+    addLog('RECORD_DELETED', `Patient data record deleted: ${id}`, { targetType: 'Record', targetId: id });
+    await db.collection('records').doc(id).delete();
+  };
+  const addLog = async (action: string, details: string, options: { targetType?: "User" | "Organization" | "Record" | null; targetId?: string | null; orgId?: string; targetName?: string; } = {}) => {
     if (!currentUser) return;
-    await db.collection('auditLogs').add({ timestamp: new Date().toISOString(), actorId: currentUser.id, actorName: currentUser.name, action, details, targetId: targetId || null, targetName: targetName || null, orgId: orgId || null });
+    
+    // Part of governance and compliance is to log who did what and when.
+    // This provides an immutable audit trail for all significant actions within the system.
+    // It's crucial for accountability, security analysis, and regulatory compliance.
+    await db.collection('auditLogs').add({
+      timestamp: new Date().toISOString(),
+      actorId: currentUser.id,
+      actorName: currentUser.name,
+      actorRole: currentUser.activeRoles.join(', '),
+      action,
+      details,
+      targetType: options.targetType || null,
+      targetId: options.targetId || null,
+      targetName: options.targetName || null,
+      orgId: options.orgId || null,
+    });
   };
   const applyForRole = async (role: UserRole, details: string, regNumber: string) => {
     if (!currentUser) return 'Not logged in';
@@ -147,8 +168,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const activeRoles = Array.from(new Set([...user.activeRoles, role]));
     const appliedRoles = user.appliedRoles.map(a => a.role === role ? { ...a, status: 'approved' as const } : a);
     await db.collection('users').doc(userId).update({ activeRoles, appliedRoles });
+    
+    // Governance: Log role approval for traceability
+    addLog("ROLE_APPROVED", `Approved role ${role} for ${user.name}`, { targetType: 'User', targetId: userId, targetName: user.name });
+
     if (role === UserRole.ORG_OWNER) {
-      await db.collection('organizations').add({ ownerId: userId, name: 'New Facility', registrationNumber: 'DGHS-PENDING', location: 'TBD', status: 'active', beds: [], pricing: [], staff: [], ledger: [], reports: [], createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 15552000000).toISOString() });
+      const newOrgRef = await db.collection('organizations').add({ ownerId: userId, name: 'New Facility', registrationNumber: 'DGHS-PENDING', location: 'TBD', status: 'active', beds: [], pricing: [], staff: [], ledger: [], reports: [], createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 15552000000).toISOString() });
+      // Governance: Log organization creation for traceability
+      addLog("ORG_CREATED", `New organization created by ${user.name}`, { targetType: 'Organization', targetId: newOrgRef.id, orgId: newOrgRef.id, targetName: 'New Facility' });
     }
   };
   const suspendRole = async (userId: string, role: UserRole) => {
@@ -159,7 +186,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const activeRoles = user.activeRoles.filter(r => r !== role);
       const suspendedRoles = Array.from(new Set([...(user.suspendedRoles || []), role]));
       await userRef.update({ activeRoles, suspendedRoles });
-      addLog('ROLE_SUSPENDED', `Suspended role ${role} for ${user.name}`, user.id, user.name);
+      // Governance: Log role suspension for traceability
+      addLog('ROLE_SUSPENDED', `Suspended role ${role} for ${user.name}`, { targetType: 'User', targetId: user.id, targetName: user.name });
     }
   };
   const unsuspendRole = async (userId: string, role: UserRole) => {
@@ -170,7 +198,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const suspendedRoles = (user.suspendedRoles || []).filter(r => r !== role);
       const activeRoles = Array.from(new Set([...user.activeRoles, role]));
       await userRef.update({ activeRoles, suspendedRoles });
-      addLog('ROLE_RESTORED', `Restored role ${role} for ${user.name}`, user.id, user.name);
+      // Governance: Log role restoration for traceability
+      addLog('ROLE_RESTORED', `Restored role ${role} for ${user.name}`, { targetType: 'User', targetId: user.id, targetName: user.name });
     }
   };
   const removeRole = async (userId: string, role: UserRole) => {
@@ -181,7 +210,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const activeRoles = user.activeRoles.filter(r => r !== role);
       const suspendedRoles = (user.suspendedRoles || []).filter(r => r !== role);
       await userRef.update({ activeRoles, suspendedRoles });
-      addLog('ROLE_REMOVED', `Removed role ${role} for ${user.name}`, user.id, user.name);
+      // Governance: Log role removal for traceability
+      addLog('ROLE_REMOVED', `Removed role ${role} for ${user.name}`, { targetType: 'User', targetId: user.id, targetName: user.name });
     }
   };
   const recruitStaff = async (orgId: string, userId: string, role: UserRole) => {
@@ -197,7 +227,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const activeRoles = Array.from(new Set([...user.activeRoles, role]));
         await db.collection('users').doc(userId).update({ activeRoles });
       }
-      addLog('STAFF_RECRUITED', `Recruited staff for ${org.name}`, userId, undefined, orgId);
+      // Governance: Log staff recruitment for traceability
+      addLog('STAFF_RECRUITED', `Recruited ${user.name} as ${role} for ${org.name}`, { targetType: 'User', targetId: userId, targetName: user.name, orgId });
     }
   };
   const updateBedStatus = async (orgId: string, bedId: string, isOccupied: boolean, patientId?: string) => {
@@ -207,13 +238,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const org = orgDoc.data() as Organization;
       const updatedBeds = (org.beds || []).map(b => b.id === bedId ? { ...b, isOccupied, currentPatientId: patientId } : b);
       await orgRef.update({ beds: updatedBeds });
-      addLog('BED_UPDATE', `Updated status of bed ${bedId} at ${org.name}`, patientId, undefined, orgId);
+      addLog('BED_UPDATE', `Updated status of bed ${bedId} at ${org.name}`, { targetType: 'Organization', targetId: orgId, targetName: org.name, orgId });
     }
   };
   const bookAppointment = async (data: { orgId: string, doctorId: string, patientId: string, date: string }) => {
     const count = appointments.filter(a => a.doctorId === data.doctorId && a.date.split('T')[0] === data.date.split('T')[0]).length;
     await db.collection('appointments').add({ ...data, status: 'scheduled', serialNumber: count + 1, createdAt: new Date().toISOString() });
-    addLog('APPOINTMENT_BOOKED', `New appointment booked`, data.patientId, undefined, data.orgId);
+    addLog('APPOINTMENT_BOOKED', `New appointment booked for patient ${data.patientId} with doctor ${data.doctorId}`, { targetType: 'User', targetId: data.patientId, orgId: data.orgId });
   };
   const completeInvestigation = async (id: string, findings: string, url?: string) => {
     const invRef = db.collection('investigations').doc(id);
@@ -221,7 +252,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (invDoc.exists) {
       const inv = invDoc.data() as Investigation;
       await invRef.update({ status: 'Completed', findings, reportFileUrl: url || null, completedAt: new Date().toISOString() });
-      addLog('INVESTIGATION_COMPLETED', `Completed investigation for patient`, inv.patientId, undefined, inv.orgId);
+      addLog('INVESTIGATION_COMPLETED', `Completed investigation for patient ${inv.patientId}`, { targetType: 'User', targetId: inv.patientId, orgId: inv.orgId });
     }
   };
   const addFinancialEntry = async (orgId: string, entry: Partial<FinancialEntry>) => {
@@ -231,12 +262,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const org = orgDoc.data() as Organization;
       const newEntry: FinancialEntry = { id: `fin-${Date.now()}`, timestamp: new Date().toISOString(), actorId: currentUser?.id || 'sys', type: entry.type || 'credit', amount: entry.amount || 0, note: entry.note || '' };
       await orgRef.update({ ledger: [...(org.ledger || []), newEntry] });
-      addLog('FINANCIAL_ENTRY', `Added financial entry: ${entry.note}`, undefined, undefined, orgId);
+      addLog('FINANCIAL_ENTRY', `Added financial entry: ${entry.note}`, { targetType: 'Organization', targetId: orgId, targetName: org.name, orgId });
     }
   };
   const resetLedger = async (orgId: string) => {
     await db.collection('organizations').doc(orgId).update({ ledger: [] });
-    addLog('LEDGER_RESET', `Ledger has been cleared for session restart`, undefined, undefined, orgId);
+    addLog('LEDGER_RESET', `Ledger has been cleared for session restart`, { targetType: 'Organization', targetId: orgId, orgId });
   };
   const extendOrganizationExpiry = async (orgId: string, months: number) => {
     const orgRef = db.collection('organizations').doc(orgId);
@@ -246,17 +277,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       const current = new Date(org.expiresAt);
       current.setMonth(current.getMonth() + months);
       await orgRef.update({ expiresAt: current.toISOString() });
-      addLog('LICENSE_EXTENDED', `Extended organization license by ${months} months`, undefined, org.name, orgId);
+      // Governance: Log license extension for traceability
+      addLog('LICENSE_EXTENDED', `Extended organization license by ${months} months for ${org.name}`, { targetType: 'Organization', targetId: orgId, targetName: org.name });
     }
   };
   const updateOrganizationStatus = async (orgId: string, status: OrgStatus) => {
     await db.collection('organizations').doc(orgId).update({ status });
-    addLog('ORG_STATUS_UPDATE', `Organization status set to ${status}`, undefined, undefined, orgId);
+    // Governance: Log organization status update for traceability
+    addLog('ORG_STATUS_UPDATE', `Organization status set to ${status}`, { targetType: 'Organization', targetId: orgId });
   };
   
   const addSchedule = async (s: Omit<DoctorSchedule, 'id'>) => { 
     await db.collection('schedules').add(s); 
-    addLog('SCHEDULE_ADDED', `New visiting schedule configured for doctor`, s.doctorId, undefined, s.orgId);
+    addLog('SCHEDULE_ADDED', `New visiting schedule configured for doctor ${s.doctorId}`, { targetType: 'User', targetId: s.doctorId, orgId: s.orgId });
   };
   
   const removeSchedule = async (id: string) => {
@@ -265,13 +298,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     if (schDoc.exists) {
       const s = schDoc.data() as DoctorSchedule;
       await schRef.delete();
-      addLog('SCHEDULE_REMOVED', `Schedule entry deleted`, s.doctorId, undefined, s.orgId);
+      addLog('SCHEDULE_REMOVED', `Schedule entry deleted for doctor ${s.doctorId}`, { targetType: 'User', targetId: s.doctorId, orgId: s.orgId });
     }
   };
   const updateSchedule = async (s: DoctorSchedule) => { 
     const { id, ...rest } = s; 
     await db.collection('schedules').doc(id).update(rest); 
-    addLog('SCHEDULE_UPDATED', `Existing schedule modified`, s.doctorId, undefined, s.orgId);
+    addLog('SCHEDULE_UPDATED', `Existing schedule modified for doctor ${s.doctorId}`, { targetType: 'User', targetId: s.doctorId, orgId: s.orgId });
   };
 
   return (

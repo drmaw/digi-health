@@ -26,7 +26,7 @@ export default function DoctorDashboard() {
   const handleConfirm = () => {
     if (pending) {
       setSelected(pending);
-      addLog('PROFILE_ACCESS', `Doctor accessed profile`, pending.healthId, pending.name);
+      addLog('PATIENT_DATA_VIEWED', `Doctor accessed patient profile: ${pending.name}`, { targetType: 'User', targetId: pending.id, targetName: pending.name });
       setPending(null);
       setQuery('');
       setViewMode('console');
@@ -180,7 +180,7 @@ export default function DoctorDashboard() {
                     defaultValue={selected.redFlag?.comment}
                     onBlur={(e) => {
                       updateUser({ ...selected, redFlag: { isPresent: !!e.target.value, comment: e.target.value } });
-                      addLog('MEDICAL_UPDATE', 'Doctor updated red flag status', selected.healthId, selected.name);
+                      addLog('MEDICAL_UPDATE', 'Doctor updated red flag status', { targetType: 'User', targetId: selected.id, targetName: selected.name });
                     }}
                   />
                 </div>
@@ -203,7 +203,7 @@ export default function DoctorDashboard() {
                   defaultValue={selected.doctorNotes}
                   onBlur={(e) => {
                     updateUser({ ...selected, doctorNotes: e.target.value });
-                    addLog('INTERNAL_NOTE_UPDATE', 'Doctor updated internal notes', selected.healthId, selected.name);
+                    addLog('INTERNAL_NOTE_UPDATE', 'Doctor updated internal notes', { targetType: 'User', targetId: selected.id, targetName: selected.name });
                   }}
                 />
               </div>
