@@ -8,7 +8,8 @@ export enum UserRole {
   ADMIN = 'System Admin',
   ASSISTANT_MANAGER = 'Assistant Manager',
   LAB_TECHNICIAN = 'Lab Technician',
-  FRONT_DESK = 'Front Desk'
+  FRONT_DESK = 'Front Desk',
+  SPECIALIST = 'Specialist'
 }
 
 export interface MedicalRecord {

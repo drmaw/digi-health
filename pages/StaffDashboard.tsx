@@ -4,19 +4,21 @@ import { UserRole, Organization } from '../types';
 import StaffDashboardNurse from './StaffDashboardNurse';
 import StaffDashboardPathology from './StaffDashboardPathology';
 import StaffDashboardGeneral from './StaffDashboardGeneral';
+import StaffDashboardSpecialist from './StaffDashboardSpecialist';
 
 export default function StaffDashboard() {
   const { currentUser, organizations, t } = useApp();
   const [activeRole, setActiveRole] = useState<UserRole | null>(null);
 
   const staffRoles = currentUser?.activeRoles.filter(r => 
-    [UserRole.NURSE, UserRole.PATHOLOGIST, UserRole.MANAGER, UserRole.LAB_TECHNICIAN, UserRole.FRONT_DESK].includes(r)
+    [UserRole.NURSE, UserRole.PATHOLOGIST, UserRole.MANAGER, UserRole.LAB_TECHNICIAN, UserRole.FRONT_DESK, UserRole.SPECIALIST].includes(r)
   ) || [];
 
   useEffect(() => {
     if (staffRoles.length > 0 && !activeRole) {
       if (staffRoles.includes(UserRole.NURSE)) setActiveRole(UserRole.NURSE);
       else if (staffRoles.includes(UserRole.PATHOLOGIST)) setActiveRole(UserRole.PATHOLOGIST);
+      else if (staffRoles.includes(UserRole.SPECIALIST)) setActiveRole(UserRole.SPECIALIST);
       else setActiveRole(staffRoles[0]);
     }
   }, [staffRoles, activeRole]);
@@ -91,6 +93,7 @@ export default function StaffDashboard() {
 
       {activeRole === UserRole.NURSE && <StaffDashboardNurse org={org} />}
       {activeRole === UserRole.PATHOLOGIST && <StaffDashboardPathology org={org} />}
+      {activeRole === UserRole.SPECIALIST && <StaffDashboardSpecialist org={org} role={activeRole} />}
       {(activeRole === UserRole.MANAGER || activeRole === UserRole.FRONT_DESK || activeRole === UserRole.LAB_TECHNICIAN) && (
         <StaffDashboardGeneral org={org} role={activeRole} />
       )}
