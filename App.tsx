@@ -8,7 +8,7 @@ import {
   Navigate
 } from 'react-router-dom';
 
-import { AppProvider, useApp } from './AppContext';
+import { AppProvider, useApp } from './context/AppContext';
 import { UserRole } from './types';
 
 /* Pages */

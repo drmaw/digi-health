@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Organization, UserRole, UserProfile, DoctorSchedule } from '../types';
-import { useApp } from '../AppContext';
+import { useApp } from '../../context/AppContext';
 import { QRScannerModal } from '../components/QRScannerModal';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

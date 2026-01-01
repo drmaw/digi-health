@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp } from '../AppContext';
+import { useApp } from '../../context/AppContext';
 import { UserRole, UserProfile, AuditLog, Organization } from '../types';
 
 const AdminDashboard: React.FC = () => {

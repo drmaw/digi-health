@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp } from '../AppContext';
+import { useApp } from '../../context/AppContext';
 import { UserProfile, Appointment, Organization } from '../types';
 import { ProfileCard } from '../components/ProfileCard';
 import { ConfirmationModal } from '../components/ConfirmationModal';

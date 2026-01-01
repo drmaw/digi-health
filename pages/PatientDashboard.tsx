@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp } from '../AppContext';
+import { useApp } from '../../context/AppContext';
 
 export default function PatientDashboard() {
   const { currentUser, records, uploadRecord, deleteRecord, t } = useApp();

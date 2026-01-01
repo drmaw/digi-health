@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useApp } from '../AppContext';
+import { useApp } from '../../context/AppContext';
 import { UserRole } from '../types';
 
 const RoleApplicationPage: React.FC = () => {

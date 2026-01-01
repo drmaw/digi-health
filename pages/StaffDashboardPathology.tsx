@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useApp } from '../AppContext';
+import { useApp } from '../../context/AppContext';
 import { Investigation, Organization } from '../types';
 
 export default function StaffDashboardPathology({ org }: { org: Organization }) {

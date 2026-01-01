@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../AppContext';
+import { useApp } from '../context/AppContext';
 import { UserRole, Organization } from '../types';
 import StaffDashboardNurse from './StaffDashboardNurse';
 import StaffDashboardPathology from './StaffDashboardPathology';
