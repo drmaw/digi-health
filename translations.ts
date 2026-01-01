@@ -12,7 +12,10 @@ export const translations: Record<Language, any> = {
     photo_url: 'ছবি (URL)', occupation: 'পেশা', allergies: 'অ্যালার্জি (ওষুধ বা অন্যান্য)', hypertension: 'উচ্চ রক্তচাপ', diabetes: 'ডায়াবেটিস',
     asthma: 'অ্যাজমা/হাঁপানি', chronic_conditions: 'দীর্ঘস্থায়ী স্বাস্থ্য সমস্যা', emergency_contacts: 'জরুরি যোগাযোগ', add_contact: 'যোগ করুন',
     relation: 'সম্পর্ক', contact_name: 'যোগাযোগের নাম', contact_phone: 'যোগাযোগের নম্বর', chamber_roster: 'চেম্বার রোস্টার', clinical_console: 'ক্লিনিকাল কনসোল',
-    chamber_appointments: 'চেম্বারের অ্যাপয়েন্টমেন্ট', no_appointments: 'আজ কোনো অ্যাপয়েন্টমেন্ট নেই'
+    chamber_appointments: 'চেম্বারের অ্যাপয়েন্টমেন্ট', no_appointments: 'আজ কোনো অ্যাপয়েন্টমেন্ট নেই',
+    hero_headline: 'আপনার স্বাস্থ্যের রেকর্ড, আপনারই মালিকানাধীন। বাংলাদেশের যেকোনো স্থানে অ্যাক্সেসযোগ্য।',
+    hero_subtitle: 'সুরক্ষিত, ডিজিটাল স্বাস্থ্য রেকর্ডের মাধ্যমে রোগীদের ক্ষমতায়ন। ক্লিনিকের সাথে সংযোগ স্থাপন করুন, আপনার ডেটা পরিচালনা করুন এবং নির্বিঘ্ন যত্ন নিশ্চিত করুন।',
+    join_now: 'এখনই যোগ দিন', learn_more: 'আরও জানুন'
   },
   en: {
     home: 'Home', profile: 'My Health', manage_profile: 'Update Profile', doctor: 'Doctor Panel', org: 'Organization', staff: 'Staff Desk',
@@ -25,6 +28,7 @@ export const translations: Record<Language, any> = {
     photo_url: 'Photo URL', occupation: 'Occupation', allergies: 'Allergies', hypertension: 'Hypertension', diabetes: 'Diabetes',
     asthma: 'Asthma', chronic_conditions: 'Chronic Conditions', emergency_contacts: 'Emergency Contacts', add_contact: 'Add Contact',
     relation: 'Relation', contact_name: 'Contact Name', contact_phone: 'Contact Phone', chamber_roster: 'Chamber Roster', clinical_console: 'Clinical Console',
-    chamber_appointments: 'Chamber Appointments', no_appointments: 'No appointments for today'
-  }
-};
+    chamber_appointments: 'Chamber Appointments', no_appointments: 'No appointments for today',
+    hero_headline: 'Your Health Records, Owned by You. Accessible Anywhere in Bangladesh.',
+    hero_subtitle: 'Empowering patients with secure, digital health records. Connect with clinics, manage your data, and ensure seamless care.',
+    join_now: 'Join Now', learn_more: 'Learn More'
